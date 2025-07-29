@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reddy - Hacker Portfolio</title>
+    <script src="https://cdn.tailwindcss.com/3.4.16"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#00ff00',
+                        secondary: '#0080ff'
+                    },
+                    borderRadius: {
+                        'none': '0px',
+                        'sm': '4px',
+                        DEFAULT: '8px',
+                        'md': '12px',
+                        'lg': '16px',
+                        'xl': '20px',
+                        '2xl': '24px',
+                        '3xl': '32px',
+                        'full': '9999px',
+                        'button': '8px'
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css" rel="stylesheet">
+    <style>
+        :where([class^="ri-"])::before {
+            content: "\f3c2";
+        }
+        
+        body {
+            font-family: 'Fira Code', monospace;
+            background: #000;
+            color: #00ff00;
+            overflow-x: hidden;
+        }
+        
+        .matrix-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.1;
+        }
+        
+        .terminal-window {
+            background: rgba(0, 0, 0, 0.9);
+            border: 1px solid #00ff00;
+            border-radius: 8px;
+            position: relative;
+        }
+        
+        .terminal-header {
+            background: #00ff00;
+            color: #000;
+            padding: 0.5rem 1rem;
+            border-radius: 8px 8px 0 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .terminal-dots {
+            display: flex;
+            gap: 0.25rem;
+        }
+        
+        .terminal-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+        
+        .dot-red { background: #ff5f56; }
+        .dot-yellow { background: #ffbd2e; }
+        .dot-green { background: #27ca3f; }
+        
+        .typewriter {
+            overflow: hidden;
+            border-right: 2px solid #00ff00;
+            white-space: nowrap;
+            animation: typing 3s steps(20, end), blink-caret 0.75s step-end infinite;
+        }
+        
+        @keyframes typing {
+            from { width: 0; }
+            to { width: 100%; }
+        }
+        
+        @keyframes blink-caret {
+            from, to { border-color: transparent; }
+            50% { border-color: #00ff00; }
+        }
+        
+        .glitch {
+            position: relative;
+            animation: glitch 2s infinite;
+        }
+        
+        @keyframes glitch {
+            0%, 100% { transform: translate(0); }
+            20% { transform: translate(-2px, 2px); }
+            40% { transform: translate(-2px, -2px); }
+            60% { transform: translate(2px, 2px); }
+            80% { transform: translate(2px, -2px); }
+        }
+        
+        .skill-bar {
+            background: rgba(0, 255, 0, 0.1);
+            border: 1px solid #00ff00;
+            height: 20px;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .skill-progress {
+            background: linear-gradient(90deg, #00ff00, #0080ff);
+            height: 100%;
+            animation: progress-fill 2s ease-in-out;
+        }
+        
+        @keyframes progress-fill {
+            from { width: 0%; }
+        }
+        
+        .project-card {
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid #00ff00;
+            transition: all 0.3s ease;
+        }
+        
+        .project-card:hover {
+            border-color: #0080ff;
+            box-shadow: 0 0 20px rgba(0, 128, 255, 0.3);
+            transform: translateY(-5px);
+        }
+        
+        .neon-button {
+            background: transparent;
+            border: 2px solid #00ff00;
+            color: #00ff00;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-family: 'Fira Code', monospace;
+        }
+        
+        .neon-button:hover {
+            background: #00ff00;
+            color: #000;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
+        }
+        
+        .input-field {
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid #00ff00;
+            color: #00ff00;
+            padding: 0.75rem;
+            border-radius: 4px;
+            font-family: 'Fira Code', monospace;
+        }
+        
+        .input-field:focus {
+            outline: none;
+            border-color: #0080ff;
+            box-shadow: 0 0 10px rgba(0, 128, 255, 0.3);
+        }
+        
+        .ascii-art {
+            font-size: 0.75rem;
+            line-height: 1;
+            white-space: pre;
+        }
+    </style>
+</head>
+<body>
+    <canvas class="matrix-bg" id="matrix"></canvas>
+    
+    <nav class="fixed top-0 w-full z-50 bg-black bg-opacity-90 border-b border-primary">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="text-primary font-bold text-xl">
+                    >  Brown_Saman_portfolio
+                </div>
+                <div class="hidden md:flex space-x-8">
+                    <a href="#home" class="text-primary hover:text-secondary transition-colors">./home</a>
+                    <a href="#about" class="text-primary hover:text-secondary transition-colors">./about</a>
+                    <a href="#projects" class="text-primary hover:text-secondary transition-colors">./projects</a>
+                    <a href="#contact" class="text-primary hover:text-secondary transition-colors">./contact</a>
+                </div>
+                <button id="mobile-menu" class="md:hidden text-primary">
+                    <div class="w-6 h-6 flex items-center justify-center">
+                        <i class="ri-menu-line ri-lg"></i>
+                    </div>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <section id="home" class="min-h-screen flex items-center justify-center px-4">
+        <div class="text-center max-w-4xl">
+            <div class="terminal-window mb-8">
+                <div class="terminal-header">
+                    <div class="terminal-dots">
+                        <div class="terminal-dot dot-red"></div>
+                        <div class="terminal-dot dot-yellow"></div>
+                        <div class="terminal-dot dot-green"></div>
+                    </div>
+                    <span class="font-semibold">terminal_session_001</span>
+                </div>
+                <div class="p-8">
+                    <div class="text-left mb-6">
+                        <div class="text-primary mb-2">$ whoami</div>
+                        <div class="text-4xl md:text-6xl font-bold mb-4">
+                            <span class="typewriter glitch">REDDY</span>
+                        </div>
+                        <div class="text-xl md:text-2xl text-secondary mb-6">
+                            > Frontend Developer & Cybersecurity Enthusiast
+                        </div>
+                        <div class="text-primary mb-4"></div>
+                        <div class="text-lg">
+                            Frontend: Html | Css| JavaScript | React<br>
+                        </div>
+                    </div>
+                    <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                        <button class="neon-button !rounded-button whitespace-nowrap">
+                            $ ./view_projects.sh
+                        </button>
+                        <button class="neon-button !rounded-button whitespace-nowrap">
+                            $ ./download_resume.pdf
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section id="about" class="py-20 px-4">
+        <div class="max-w-6xl mx-auto">
+            <div class="terminal-window">
+                <div class="terminal-header">
+                    <div class="terminal-dots">
+                        <div class="terminal-dot dot-red"></div>
+                        <div class="terminal-dot dot-yellow"></div>
+                        <div class="terminal-dot dot-green"></div>
+                    </div>
+                    <span class="font-semibold">about_reddy.py</span>
+                </div>
+                <div class="p-8">
+                    <div class="grid md:grid-cols-2 gap-8">
+                        <div>
+                            <div class="text-primary mb-4">$ python about_reddy.py</div>
+                            <div class="text-lg mb-6">
+                                class Developer:<br>
+                                &nbsp;&nbsp;def __init__(self):<br>
+                                &nbsp;&nbsp;&nbsp;&nbsp;self.name = "Brown"<br>
+                                &nbsp;&nbsp;&nbsp;&nbsp;self.experience = "1.5+ years"<br>
+                                &nbsp;&nbsp;&nbsp;&nbsp;self.passion = ["coding", "hacking", "innovation"]<br>
+                                &nbsp;&nbsp;&nbsp;&nbsp;self.location = "Global Remote"<br><br>
+                                
+                                &nbsp;&nbsp;def get_bio(self):<br>
+                                &nbsp;&nbsp;&nbsp;&nbsp;return """<br>
+                                &nbsp;&nbsp;&nbsp;&nbsp;Passionate full-stack developer with expertise<br>
+                                &nbsp;&nbsp;&nbsp;&nbsp;in modern web technologies and cybersecurity.<br>
+                                &nbsp;&nbsp;&nbsp;&nbsp;I create secure, scalable applications and<br>
+                                &nbsp;&nbsp;&nbsp;&nbsp;enjoy solving complex technical challenges.<br>
+                                &nbsp;&nbsp;&nbsp;&nbsp;"""
+                            </div>
+                        </div>
+                        <div>
+                            <div class="text-primary mb-4">$ cat technical_skills.json</div>
+                            <div class="space-y-4">
+                                <div>
+                                    <div class="flex justify-between mb-1">
+                                        <span>JavaScript/TypeScript</span>
+                                        <span>95%</span>
+                                    </div>
+                                    <div class="skill-bar">
+                                        <div class="skill-progress" style="width: 95%"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between mb-1">
+                                        <span>React.js/Next.js</span>
+                                        <span>90%</span>
+                                    </div>
+                                    <div class="skill-bar">
+                                        <div class="skill-progress" style="width: 90%"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between mb-1">
+                                        <span>Node.js/Express</span>
+                                        <span>85%</span>
+                                    </div>
+                                    <div class="skill-bar">
+                                        <div class="skill-progress" style="width: 85%"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between mb-1">
+                                        <span>Python/Django</span>
+                                        <span>80%</span>
+                                    </div>
+                                    <div class="skill-bar">
+                                        <div class="skill-progress" style="width: 80%"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between mb-1">
+                                        <span>Cybersecurity</span>
+                                        <span>75%</span>
+                                    </div>
+                                    <div class="skill-bar">
+                                        <div class="skill-progress" style="width: 75%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="projects" class="py-20 px-4">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-12">
+                <div class="text-primary text-lg mb-2">$ ls -la ./projects/</div>
+                <h2 class="text-4xl font-bold mb-4">Featured Projects</h2>
+                <p class="text-xl text-secondary">A collection of my latest work and experiments</p>
+            </div>
+            
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div class="project-card rounded-lg p-6">
+                    <div class="terminal-header mb-4">
+                        <div class="terminal-dots">
+                            <div class="terminal-dot dot-red"></div>
+                            <div class="terminal-dot dot-yellow"></div>
+                            <div class="terminal-dot dot-green"></div>
+                        </div>
+                        <span class="font-semibold">e-commerce_platform.js</span>
+                    </div>
+                    <div class="mb-4">
+                        <img src="https://readdy.ai/api/search-image?query=modern%20e-commerce%20website%20interface%20with%20dark%20theme%2C%20shopping%20cart%2C%20product%20listings%2C%20clean%20minimal%20design%2C%20professional%20web%20application%20screenshot&width=400&height=250&seq=1&orientation=landscape" 
+                             alt="E-commerce Platform" class="w-full h-48 object-cover object-top rounded">
+                    </div>
+                    <h3 class="text-xl font-bold mb-2 text-primary">SecureShop Platform</h3>
+                    <p class="text-sm mb-4">Full-stack e-commerce solution with advanced security features, payment integration, and real-time inventory management.</p>
+                    <div class="text-xs mb-4 text-secondary">
+                        Tech: React.js, Node.js, PostgreSQL, Stripe API, JWT Authentication
+                    </div>
+                    <div class="flex gap-2">
+                        <button class="neon-button text-xs !rounded-button whitespace-nowrap">
+                            <div class="w-4 h-4 flex items-center justify-center mr-1">
+                                <i class="ri-external-link-line"></i>
+                            </div>
+                            Live Demo
+                        </button>
+                        <button class="neon-button text-xs !rounded-button whitespace-nowrap">
+                            <div class="w-4 h-4 flex items-center justify-center mr-1">
+                                <i class="ri-github-line"></i>
+                            </div>
+                            Code
+                        </button>
+                    </div>
+                </div>
+
+                <div class="project-card rounded-lg p-6">
+                    <div class="terminal-header mb-4">
+                        <div class="terminal-dots">
+                            <div class="terminal-dot dot-red"></div>
+                            <div class="terminal-dot dot-yellow"></div>
+                            <div class="terminal-dot dot-green"></div>
+                        </div>
+                        <span class="font-semibold">vulnerability_scanner.py</span>
+                    </div>
+                    <div class="mb-4">
+                        <img src="https://readdy.ai/api/search-image?query=cybersecurity%20dashboard%20with%20network%20scanning%20results%2C%20vulnerability%20assessment%20interface%2C%20dark%20theme%20with%20green%20terminal%20text%2C%20security%20monitoring%20tools&width=400&height=250&seq=2&orientation=landscape" 
+                             alt="Security Scanner" class="w-full h-48 object-cover object-top rounded">
+                    </div>
+                    <h3 class="text-xl font-bold mb-2 text-primary">NetScan Pro</h3>
+                    <p class="text-sm mb-4">Advanced network vulnerability scanner with automated reporting, OWASP compliance checking, and real-time threat detection.</p>
+                    <div class="text-xs mb-4 text-secondary">
+                        Tech: Python, Nmap, SQLite, Flask, Celery, Redis
+                    </div>
+                    <div class="flex gap-2">
+                        <button class="neon-button text-xs !rounded-button whitespace-nowrap">
+                            <div class="w-4 h-4 flex items-center justify-center mr-1">
+                                <i class="ri-external-link-line"></i>
+                            </div>
+                            Demo
+                        </button>
+                        <button class="neon-button text-xs !rounded-button whitespace-nowrap">
+                            <div class="w-4 h-4 flex items-center justify-center mr-1">
+                                <i class="ri-github-line"></i>
+                            </div>
+                            Source
+                        </button>
+                    </div>
+                </div>
+
+                <div class="project-card rounded-lg p-6">
+                    <div class="terminal-header mb-4">
+                        <div class="terminal-dots">
+                            <div class="terminal-dot dot-red"></div>
+                            <div class="terminal-dot dot-yellow"></div>
+                            <div class="terminal-dot dot-green"></div>
+                        </div>
+                        <span class="font-semibold">crypto_tracker.tsx</span>
+                    </div>
+                    <div class="mb-4">
+                        <img src="https://readdy.ai/api/search-image?query=cryptocurrency%20trading%20dashboard%20with%20charts%2C%20price%20tracking%2C%20portfolio%20management%20interface%2C%20dark%20theme%20with%20neon%20green%20accents%2C%20financial%20data%20visualization&width=400&height=250&seq=3&orientation=landscape" 
+                             alt="Crypto Tracker" class="w-full h-48 object-cover object-top rounded">
+                    </div>
+                    <h3 class="text-xl font-bold mb-2 text-primary">CryptoVault Dashboard</h3>
+                    <p class="text-sm mb-4">Real-time cryptocurrency tracking platform with portfolio management, price alerts, and advanced analytics features.</p>
+                    <div class="text-xs mb-4 text-secondary">
+                        Tech: Next.js, TypeScript, Chart.js, WebSocket, MongoDB
+                    </div>
+                    <div class="flex gap-2">
+                        <button class="neon-button text-xs !rounded-button whitespace-nowrap">
+                            <div class="w-4 h-4 flex items-center justify-center mr-1">
+                                <i class="ri-external-link-line"></i>
+                            </div>
+                            View
+                        </button>
+                        <button class="neon-button text-xs !rounded-button whitespace-nowrap">
+                            <div class="w-4 h-4 flex items-center justify-center mr-1">
+                                <i class="ri-github-line"></i>
+                            </div>
+                            Repo
+                        </button>
+                    </div>
+                </div>
+
+                <div class="project-card rounded-lg p-6">
+                    <div class="terminal-header mb-4">
+                        <div class="terminal-dots">
+                            <div class="terminal-dot dot-red"></div>
+                            <div class="terminal-dot dot-yellow"></div>
+                            <div class="terminal-dot dot-green"></div>
+                        </div>
+                        <span class="font-semibold">ai_chatbot.js</span>
+                    </div>
+                    <div class="mb-4">
+                        <img src="https://readdy.ai/api/search-image?query=AI%20chatbot%20interface%20with%20conversation%20bubbles%2C%20modern%20chat%20application%2C%20dark%20theme%20with%20green%20terminal%20styling%2C%20artificial%20intelligence%20assistant&width=400&height=250&seq=4&orientation=landscape" 
+                             alt="AI Chatbot" class="w-full h-48 object-cover object-top rounded">
+                    </div>
+                    <h3 class="text-xl font-bold mb-2 text-primary">IntelliBot Assistant</h3>
+                    <p class="text-sm mb-4">AI-powered chatbot with natural language processing, context awareness, and multi-platform integration capabilities.</p>
+                    <div class="text-xs mb-4 text-secondary">
+                        Tech: Node.js, OpenAI API, Socket.io, Express, MongoDB
+                    </div>
+                    <div class="flex gap-2">
+                        <button class="neon-button text-xs !rounded-button whitespace-nowrap">
+                            <div class="w-4 h-4 flex items-center justify-center mr-1">
+                                <i class="ri-external-link-line"></i>
+                            </div>
+                            Try It
+                        </button>
+                        <button class="neon-button text-xs !rounded-button whitespace-nowrap">
+                            <div class="w-4 h-4 flex items-center justify-center mr-1">
+                                <i class="ri-github-line"></i>
+                            </div>
+                            Code
+                        </button>
+                    </div>
+                </div>
+
+                <div class="project-card rounded-lg p-6">
+                    <div class="terminal-header mb-4">
+                        <div class="terminal-dots">
+                            <div class="terminal-dot dot-red"></div>
+                            <div class="terminal-dot dot-yellow"></div>
+                            <div class="terminal-dot dot-green"></div>
+                        </div>
+                        <span class="font-semibold">blockchain_explorer.sol</span>
+                    </div>
+                    <div class="mb-4">
+                        <img src="https://readdy.ai/api/search-image?query=blockchain%20explorer%20interface%20showing%20transaction%20data%2C%20smart%20contracts%2C%20ethereum%20network%20visualization%2C%20dark%20theme%20with%20neon%20green%20highlights%2C%20cryptocurrency%20blocks&width=400&height=250&seq=5&orientation=landscape" 
+                             alt="Blockchain Explorer" class="w-full h-48 object-cover object-top rounded">
+                    </div>
+                    <h3 class="text-xl font-bold mb-2 text-primary">ChainScope Explorer</h3>
+                    <p class="text-sm mb-4">Blockchain transaction explorer with smart contract analysis, real-time network monitoring, and advanced search capabilities.</p>
+                    <div class="text-xs mb-4 text-secondary">
+                        Tech: React.js, Web3.js, Solidity, Ethereum, GraphQL
+                    </div>
+                    <div class="flex gap-2">
+                        <button class="neon-button text-xs !rounded-button whitespace-nowrap">
+                            <div class="w-4 h-4 flex items-center justify-center mr-1">
+                                <i class="ri-external-link-line"></i>
+                            </div>
+                            Explore
+                        </button>
+                        <button class="neon-button text-xs !rounded-button whitespace-nowrap">
+                            <div class="w-4 h-4 flex items-center justify-center mr-1">
+                                <i class="ri-github-line"></i>
+                            </div>
+                            GitHub
+                        </button>
+                    </div>
+                </div>
+
+                <div class="project-card rounded-lg p-6">
+                    <div class="terminal-header mb-4">
+                        <div class="terminal-dots">
+                            <div class="terminal-dot dot-red"></div>
+                            <div class="terminal-dot dot-yellow"></div>
+                            <div class="terminal-dot dot-green"></div>
+                        </div>
+                        <span class="font-semibold">devops_automation.yml</span>
+                    </div>
+                    <div class="mb-4">
+                        <img src="https://readdy.ai/api/search-image?query=DevOps%20automation%20dashboard%20with%20CI%2FCD%20pipelines%2C%20deployment%20monitoring%2C%20server%20management%20interface%2C%20dark%20theme%20with%20terminal%20green%20styling%2C%20cloud%20infrastructure&width=400&height=250&seq=6&orientation=landscape" 
+                             alt="DevOps Platform" class="w-full h-48 object-cover object-top rounded">
+                    </div>
+                    <h3 class="text-xl font-bold mb-2 text-primary">AutoDeploy Suite</h3>
+                    <p class="text-sm mb-4">Complete DevOps automation platform with CI/CD pipelines, infrastructure monitoring, and automated deployment workflows.</p>
+                    <div class="text-xs mb-4 text-secondary">
+                        Tech: Docker, Kubernetes, Jenkins, AWS, Terraform, Ansible
+                    </div>
+                    <div class="flex gap-2">
+                        <button class="neon-button text-xs !rounded-button whitespace-nowrap">
+                            <div class="w-4 h-4 flex items-center justify-center mr-1">
+                                <i class="ri-external-link-line"></i>
+                            </div>
+                            Dashboard
+                        </button>
+                        <button class="neon-button text-xs !rounded-button whitespace-nowrap">
+                            <div class="w-4 h-4 flex items-center justify-center mr-1">
+                                <i class="ri-github-line"></i>
+                            </div>
+                            Scripts
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="contact" class="py-20 px-4">
+        <div class="max-w-4xl mx-auto">
+            <div class="terminal-window">
+                <div class="terminal-header">
+                    <div class="terminal-dots">
+                        <div class="terminal-dot dot-red"></div>
+                        <div class="terminal-dot dot-yellow"></div>
+                        <div class="terminal-dot dot-green"></div>
+                    </div>
+                    <span class="font-semibold">contact_form.sh</span>
+                </div>
+                <div class="p-8">
+                    <div class="grid md:grid-cols-2 gap-8">
+                        <div>
+                            <div class="text-primary mb-4">$ ./initiate_contact.sh</div>
+                            <h2 class="text-3xl font-bold mb-6">Let's Connect</h2>
+                            <p class="text-lg mb-8">
+                                Ready to collaborate on your next project? Drop me a message and let's build something amazing together.
+                            </p>
+                            
+                            <div class="space-y-4">
+                                <div class="flex items-center gap-4">
+                                    <div class="w-8 h-8 flex items-center justify-center">
+                                        <i class="ri-mail-line ri-lg text-primary"></i>
+                                    </div>
+                                    <span>Muxammadjon212121@gmail.com</span>
+                                </div>
+                                <div class="flex items-center gap-4">
+                                    <div class="w-8 h-8 flex items-center justify-center">
+                                        <i class="ri-linkedin-line ri-lg text-primary"></i>
+                                    </div>
+                                    <span>linkedin.com/in/BrownSaman</span>
+                                </div>
+                                <div class="flex items-center gap-4">
+                                    <div class="w-8 h-8 flex items-center justify-center">
+                                        <i class="ri-github-line ri-lg text-primary"></i>
+                                    </div>
+                                    <span>github.com/BrownSaman</span>
+                                </div>
+                                <div class="flex items-center gap-4">
+                                    <div class="w-8 h-8 flex items-center justify-center">
+                                        <i class="ri-twitter-x-line ri-lg text-primary"></i>
+                                    </div>
+                                    <span>@reddy_codes</span>
+                                </div>
+                            </div>
+                            
+                            <div class="mt-8 ascii-art text-primary text-xs">
+    ╔══════════════════════════════╗
+    ║  > Status: Available for     ║
+    ║    Freelance Projects        ║
+    ║  > Response Time: < 24hrs    ║
+    ║  > Timezone: UTC+0           ║
+    ╚══════════════════════════════╝
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <div class="text-primary mb-4">$ nano message.txt</div>
+                            <form class="space-y-4">
+                                <div>
+                                    <label class="block text-sm mb-2">Name:</label>
+                                    <input type="text" class="input-field w-full" placeholder="Enter your name">
+                                </div>
+                                <div>
+                                    <label class="block text-sm mb-2">Email:</label>
+                                    <input type="email" class="input-field w-full" placeholder="your.email@domain.com">
+                                </div>
+                                <div>
+                                    <label class="block text-sm mb-2">Subject:</label>
+                                    <input type="text" class="input-field w-full" placeholder="Project inquiry / Collaboration">
+                                </div>
+                                <div>
+                                    <label class="block text-sm mb-2">Message:</label>
+                                    <textarea class="input-field w-full h-32 resize-none" placeholder="Tell me about your project..."></textarea>
+                                </div>
+                                <button type="submit" class="neon-button w-full !rounded-button whitespace-nowrap">
+                                    $ send_message --encrypt --priority=high
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <footer class="py-8 px-4 border-t border-primary">
+        <div class="max-w-7xl mx-auto text-center">
+            <div class="text-primary mb-4">$ echo "Thanks for visiting!"</div>
+            <p class="text-sm">
+                © 2025 Reddy Portfolio. Built with passion, secured with paranoia.
+            </p>
+            <div class="mt-4 text-xs text-secondary">
+                > System uptime: 99.9% | Last updated: 2025-01-14 | Version: 2.1.0
+            </div>
+        </div>
+    </footer>
+
+    <script id="matrix-animation">
+        const canvas = document.getElementById('matrix');
+        const ctx = canvas.getContext('2d');
+
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        const matrix = "ABCDEFGHIJKLMNOPQRSTUVWXYZ123456789@#$%^&*()*&^%+-/~{[|`]}";
+        const matrixArray = matrix.split("");
+        const fontSize = 10;
+        const columns = canvas.width / fontSize;
+
+        const drops = [];
+        for(let x = 0; x < columns; x++) {
+            drops[x] = 1;
+        }
+
+        function draw() {
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.04)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            ctx.fillStyle = '#00ff00';
+            ctx.font = fontSize + 'px monospace';
+
+            for(let i = 0; i < drops.length; i++) {
+                const text = matrixArray[Math.floor(Math.random() * matrixArray.length)];
+                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+                
+                if(drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                    drops[i] = 0;
+                }
+                drops[i]++;
+            }
+        }
+
+        setInterval(draw, 35);
+
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
+    </script>
+
+    <script id="smooth-scrolling">
+        document.addEventListener('DOMContentLoaded', function() {
+            const links = document.querySelectorAll('a[href^="#"]');
+            
+            links.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href');
+                    const targetElement = document.querySelector(targetId);
+                    
+                    if (targetElement) {
+                        targetElement.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+
+    <script id="mobile-menu-toggle">
+        document.addEventListener('DOMContentLoaded', function() {
+            const mobileMenuButton = document.getElementById('mobile-menu');
+            const nav = document.querySelector('nav');
+            
+            mobileMenuButton.addEventListener('click', function() {
+                const menu = nav.querySelector('.hidden');
+                if (menu) {
+                    menu.classList.toggle('hidden');
+                    menu.classList.toggle('block');
+                }
+            });
+        });
+    </script>
+
+    <script id="typewriter-effect">
+        document.addEventListener('DOMContentLoaded', function() {
+            const typewriterElement = document.querySelector('.typewriter');
+            if (typewriterElement) {
+                const text = typewriterElement.textContent;
+                typewriterElement.textContent = '';
+                
+                let i = 0;
+                const typeInterval = setInterval(() => {
+                    if (i < text.length) {
+                        typewriterElement.textContent += text.charAt(i);
+                        i++;
+                    } else {
+                        clearInterval(typeInterval);
+                    }
+                }, 150);
+            }
+        });
+    </script>
+
+    <script id="form-submission">
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.querySelector('form');
+            if (form) {
+                form.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    const button = this.querySelector('button[type="submit"]');
+                    const originalText = button.textContent;
+                    
+                    button.textContent = '$ sending_message --progress=100%';
+                    button.disabled = true;
+                    
+                    setTimeout(() => {
+                        button.textContent = '$ message_sent --status=success';
+                        setTimeout(() => {
+                            button.textContent = originalText;
+                            button.disabled = false;
+                            form.reset();
+                        }, 2000);
+                    }, 1500);
+                });
+            }
+        });
+    </script>
+</body>
+</html>
